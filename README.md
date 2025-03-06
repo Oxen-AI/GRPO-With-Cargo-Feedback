@@ -21,12 +21,22 @@ All of the data and results were saved to the [ox/Rust](https://www.oxen.ai/ox/R
 
 # 📒 Running the Notebooks
 
-There are 4 main notebooks used to train, evaluate, and monitor the results.
+There are 4 main notebooks used to train, evaluate, and monitor the results. 
 
 1) [train.py](train.py) - Train the model using GRPO
 2) [viz.py](viz.py) - Visualize the reward functions
 3) [inference.py](inference.py) - Run inference on a model checkpoint
 4) [eval.py](eval.py) - Run the results of inference through the Rust toolchain to compute accuracy.
+
+You can use Marimo to run the Notebooks.
+
+```
+pip install marimo
+```
+
+```
+marimo edit train.py
+```
 
 ## 🏋️ Training
 
