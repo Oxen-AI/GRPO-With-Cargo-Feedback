@@ -82,4 +82,4 @@ Blog: [GRPO VRAM Requirements For the GPU Poor](https://www.oxen.ai/blog/grpo-vr
 
 This project is powered by [Oxen.ai](https://oxen.ai) 🐂 🌾
 
-Oxen.ai provides open-source tools to track, iterate, collaborate on, and discover large datasets in any format. Within the Oxen.ai toolchain a lightning fast data version control tool, data vizualization, notebooks, and ability to run models on your data. You can learn more at https://oxen.ai.
+Oxen.ai provides open-source tools to track, iterate, collaborate on, and discover large datasets in any format. Within the Oxen.ai toolchain a lightning fast data version control tool, data visualization, notebooks, and ability to run models on your data. You can learn more at https://oxen.ai.
