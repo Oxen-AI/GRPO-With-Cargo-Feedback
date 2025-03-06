@@ -1,6 +1,6 @@
 # 🦀 GRPO-With-Cargo-Feedback
 
-This repository goes along with the blog post [Train a Rust 1.5B Coder LLM with Reinforcement Learning (GRPO)](TODO). It is composed into a set of [Marimo Notebooks](https://marimo.io/) to make the experiments reproducible and easy to run.
+This repository goes along with the blog post [Train a Rust 1.5B Coder LLM with Reinforcement Learning (GRPO)](https://www.oxen.ai/blog/training-a-rust-1-5b-coder-lm-with-reinforcement-learning-grpo). It is composed into a set of [Marimo Notebooks](https://marimo.io/) to make the experiments reproducible and easy to run.
 
 # 🥅 Goal
 
