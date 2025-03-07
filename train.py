@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.11.14"
+__generated_with = "0.11.17"
 app = marimo.App(width="medium")
 
 
@@ -26,7 +26,7 @@ def _(mo):
     model_name_ui = mo.ui.text(value="Qwen/Qwen2.5-Coder-1.5B-Instruct", full_width=True)
     train_file_ui = mo.ui.text(value="cargo_test_passed_train.parquet", full_width=True)
     save_every = mo.ui.number(label="Save Every", value=100)
-    commit_every = mo.ui.number(label="Commit Every", value=10)
+    commit_every = mo.ui.number(label="Commit Every", value=100)
     num_generations = mo.ui.number(label="Num Generations", value=4)
     use_peft_checkbox = mo.ui.checkbox(label="Use PEFT", value=True)
     use_gpu_checkbox = mo.ui.checkbox(label="Use GPU", value=True)
