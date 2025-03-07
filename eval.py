@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.11.14"
+__generated_with = "0.11.17"
 app = marimo.App(width="medium")
 
 
@@ -36,8 +36,8 @@ def _(RustTool, mo):
     should_add_tests = True
     num_rows = -1 # -1 == all
 
-    file_path_text = mo.ui.text(value="data/Qwen2.5-Coder-1.5B-Instruct-predictions.parquet", full_width=True)
-    output_path_text = mo.ui.text(value="data/Qwen2.5-Coder-1.5B-Instruct-results.parquet", full_width=True)
+    file_path_text = mo.ui.text(value="/home/oxen/Code/Oxen/OxenNotebooks/results/GRPO_85_2025-03-05_03-47-22_Qwen2.5-Coder-3B-Instruct/predictions_code_and_tests.parquet", full_width=True)
+    output_path_text = mo.ui.text(value="/home/oxen/Code/Oxen/OxenNotebooks/results/GRPO_85_2025-03-05_03-47-22_Qwen2.5-Coder-3B-Instruct/results_code_and_tests.parquet", full_width=True)
 
     run_form = mo.md(
         """
@@ -73,9 +73,9 @@ def _(
     file_path_text,
     mo,
     num_rows,
+    output_path_text,
     pd,
     run_form,
-    should_add_tests,
     tools,
 ):
     # If the button is not pressed, stop execution
@@ -86,7 +86,7 @@ def _(
     # Read in df from oxen
     df = pd.read_parquet(file_path_text.value)
 
-    results = evaluate_solutions(df, tools, should_add_tests, num_rows)
+    results = evaluate_solutions(df, tools, output_path_text.value, max_rows=num_rows)
     return df, results
 
 
@@ -97,8 +97,8 @@ def _(plot_results, results):
 
 
 @app.cell
-def _(output_file, results):
-    results.to_parquet(output_file)
+def _(output_path_text, results):
+    results.to_parquet(output_path_text.value)
     results
     return
 
@@ -109,11 +109,23 @@ def _(mo, plt):
         def _plot(df, column_name, title):
             build_passed_counts = results[column_name].value_counts()
             plt.figure(figsize=(4, 3))
-            num_correct = build_passed_counts[True]
-            total = build_passed_counts[True] + build_passed_counts[False]
+            num_correct = build_passed_counts[True] if True in build_passed_counts else 0.0
+            num_incorrect = build_passed_counts[False] if False in build_passed_counts else 0.0
+            total = num_correct + num_incorrect
             percentage = (num_correct / total) * 100
             plt.title(f"{title}: {num_correct}/{total} = {percentage:.2f}%")
-            plt.bar(build_passed_counts.index.astype(str), build_passed_counts.values)
+
+            # Create ordered index and corresponding values
+            ordered_index = ['True', 'False']
+            ordered_values = [build_passed_counts.get(True, 0), build_passed_counts.get(False, 0)]
+    
+            # Create color map
+            # Retro color palette
+            # https://www.color-hex.com/color-palette/165
+            colors = ['#6fcb9f', '#fb2e01']
+    
+            # Plot with fixed order and colors
+            plt.bar(ordered_index, ordered_values, color=colors)
             return plt.gca()
 
         return mo.vstack(
@@ -177,22 +189,10 @@ def _():
 def _():
     def template_rs_file():
         return """
-    #![allow(dead_code)]
     // {code}
 
     fn main() {
         println!("Hello, world!");
-    }
-
-    #[cfg(test)]
-    mod tests {
-        use super::*;
-
-        #[test]
-        fn test_generated_code() {
-    // {tests}
-            println!("test passed");
-        }
     }
     """
     return (template_rs_file,)
@@ -221,7 +221,7 @@ def _(
     template_rs_file,
     uuid4,
 ):
-    def setup_and_test_rust_project(row, tools, add_tests=False):
+    def setup_and_test_rust_project(row, tools):
         """
         Sets up a Rust project from template and runs tests for a single row of data
         """
@@ -239,14 +239,7 @@ def _(
         rust_code = extract_rust_code(row['response'])
         template = template.replace("// {code}", rust_code)
 
-        # Add proper spacing to the test_list
-        if add_tests:
-            rust_test_list = extract_rust_code(row['test_list'])
-            test_list = rust_test_list.split("\n")
-            test_list = "\n".join([f"        {test}" for test in test_list])
-            template = template.replace("// {tests}", test_list)
-
-        # print(template)
+        print(template)
 
         # Write the cargo project files
         main_rs_path = project_dir_src / Path("main.rs")
@@ -285,8 +278,8 @@ def _():
 
 
 @app.cell
-def _(mo, output_file, pd, setup_and_test_rust_project):
-    def evaluate_solutions(df, tools, add_tests=False, max_rows=-1):
+def _(mo, pd, setup_and_test_rust_project):
+    def evaluate_solutions(df, tools, output_file, max_rows=-1):
         """
         Evaluates all solutions in the dataframe
         Returns dataframe with added clippy_passed and tests_passed columns
@@ -302,7 +295,7 @@ def _(mo, output_file, pd, setup_and_test_rust_project):
                 if max_rows > 0 and idx >= max_rows:
                     break
 
-                test_results = setup_and_test_rust_project(row, tools, add_tests)
+                test_results = setup_and_test_rust_project(row, tools)
                 test_results['idx'] = idx
                 # merge the row with the test results
                 row = row.to_dict()
