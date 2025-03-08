@@ -217,7 +217,7 @@ def _(
                 tools = [RustTool("test")]
                 cargo_results = setup_and_test_rust_project(data, tools)
                 # Let's give some extra credit for tests passing compared to the other rewards
-                score = 3.0 if cargo_results['test_passed'] else 0.0
+                score = 2.0 if cargo_results['test_passed'] else 0.0
             results.append(score)
         return results
 
